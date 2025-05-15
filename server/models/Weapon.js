@@ -1,117 +1,83 @@
-/*import { DataTypes } from 'sequelize';
+import { DataTypes } from 'sequelize';
 
-export default (sequelize) => {
-    const Weapon = sequelize.define('Weapon', {
-      name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
-        validate: {
-          len: [2, 100]
-        }
-      },
-      type: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          isIn: [['Straight Sword', 'Greatsword', 'Ultra Greatsword', 'Curved Sword', 'Katana', 'Dagger', 'Spear', 'Halberd', 'Axe', 'Greataxe', 'Hammer', 'Great Hammer', 'Fist', 'Bow', 'Crossbow', 'Staff', 'Chime', 'Pyromancy Flame', 'Shield']]
-        }
-      },
-      damage: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        validate: {
-          min: 0
-        }
-      },
-      weight: {
-        type: DataTypes.FLOAT,
-        allowNull: false,
-        validate: {
-          min: 0
-        }
-      },
-      scaling: {
-        type: DataTypes.JSON,
-        allowNull: false
-      },
-      requiredAttributes: {
-        type: DataTypes.JSON,
-        allowNull: false
-      },
-      description: {
-        type: DataTypes.TEXT
-      },
-      imageUrl: {
-        type: DataTypes.STRING,
-        validate: {
-          isUrl: true
-        }
+export default function(sequelize) {
+  const Weapon = sequelize.define('Weapon', {
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        notEmpty: true,
+        len: [2, 100]
       }
-    }, {});
-  
-    Weapon.associate = function(models) {
-      Weapon.belongsTo(models.User, { foreignKey: 'userId' });
-    };
-  
-    return Weapon;
-  };*/
+    },
+    type: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+        isIn: [['Straight Sword', 'Greatsword', 'Ultra Greatsword', 'Curved Sword', 'Katana', 'Dagger', 'Spear', 'Halberd', 'Axe', 'Greataxe', 'Hammer', 'Great Hammer', 'Fist', 'Bow', 'Crossbow', 'Staff', 'Chime', 'Pyromancy Flame', 'Shield']]
+      }
+    },
+    damage: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        min: 0
+      }
+    },
+    weight: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+      validate: {
+        min: 0
+      }
+    },
+    scaling: {
+      type: DataTypes.JSON,
+      allowNull: false,
+      defaultValue: {
+        strength: '-',
+        dexterity: '-',
+        intelligence: '-',
+        faith: '-'
+      }
+    },
+    requiredAttributes: {
+      type: DataTypes.JSON,
+      allowNull: false,
+      defaultValue: {
+        strength: 0,
+        dexterity: 0,
+        intelligence: 0,
+        faith: 0
+      }
+    },
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    imageUrl: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      validate: {
+        isUrl: true
+      }
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    }
+  }, {
+    timestamps: true
+  });
 
-  export default (sequelize, DataTypes) => {
-    const Weapon = sequelize.define('Weapon', {
-      name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
-        validate: {
-          len: [2, 100],
-        },
-      },
-      type: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          isIn: [['Straight Sword', 'Greatsword', 'Ultra Greatsword', 'Curved Sword', 'Katana', 'Dagger', 'Spear', 'Halberd', 'Axe', 'Greataxe', 'Hammer', 'Great Hammer', 'Fist', 'Bow', 'Crossbow', 'Staff', 'Chime', 'Pyromancy Flame', 'Shield']], // Пример типов
-        },
-      },
-      damage: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        validate: {
-          min: 0,
-        },
-      },
-      weight: {
-        type: DataTypes.FLOAT,
-        allowNull: false,
-        validate: {
-          min: 0
-        }
-      },
-      scaling: {
-        type: DataTypes.JSON,
-        allowNull: false
-      },
-      requiredAttributes: {
-        type: DataTypes.JSON,
-        allowNull: false
-      },
-      description: {
-        type: DataTypes.TEXT
-      },
-      imageUrl: {
-        type: DataTypes.STRING,
-        validate: {
-          isUrl: true
-        }
-      }
-    }, {
-      timestamps: true, // Добавляет createdAt и updatedAt
+  Weapon.associate = function(models) {
+    Weapon.belongsTo(models.User, {
+      foreignKey: 'userId',
+      as: 'creator'
     });
-  
-    Weapon.associate = (models) => {
-      Weapon.belongsTo(models.User, { foreignKey: 'userId' });
-    };
-  
-    return Weapon; // важно вернуть модель?
   };
+
+  return Weapon;
+}

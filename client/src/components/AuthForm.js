@@ -1,37 +1,51 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { loginSuccess } from '../features/auth/authSlice';
+import { API_URL } from '../features/constants';
 
-const AuthForm = ({ type, onSuccess }) => {  // Добавлен пропс onSuccess
-  const [email, setEmail] = useState('darksouls3@example.com'); // Предзаполнен для теста
-  const [password, setPassword] = useState('solaire123'); // Предзаполнен для теста
+const AuthForm = ({ type, onSuccess }) => {
+  const [email, setEmail] = useState('darksouls3@example.com');
+  const [password, setPassword] = useState('solaire123');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(''); // сброс ошибки перед новым запросом
+    
     try {
-      const response = await fetch(`http://localhost:5000/api/auth/${type}`, {
+      const response = await fetch(`${API_URL}/auth/${type}`, { // type для пути
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Ошибка сервера');
+        throw new Error(errorData.message || 'Ошибка авторизации');
       }
+
+      const data = await response.json();
       
-      const { token } = await response.json();
-      localStorage.setItem('token', token);
-      onSuccess(); // Важно вызвать ДО navigate
+      dispatch(loginSuccess({
+        token: data.token,
+        role: data.role
+      }));
+
+      if (onSuccess) onSuccess(data);
+      
+      // перенаправление после успешной авторизации
       navigate('/');
+
     } catch (err) {
-      setError(err.message);
       console.error('Auth error:', err);
+      setError(err.message || 'Произошла ошибка при авторизации');
     }
   };
-
-
 
   return (
     <div className="auth-form">

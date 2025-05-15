@@ -9,7 +9,7 @@ import {
 } from '../controllers/weaponsController.js';
 import { checkToken } from '../middleware/checkToken.js';
 import { weaponValidationRules } from '../middleware/validation.js';
-import checkRole from '../middleware/checkRole.js'; // Проверка ролей (admin/user)
+import { checkRole, checkAdmin } from '../middleware/checkRole.js'; // Проверка ролей (admin/user)
 import multer from 'multer';
 
 const upload = multer({ dest: 'uploads/' });
@@ -28,16 +28,16 @@ router.get('/type/:type', getWeaponsByType);
 
 // POST /api/weapons — создать оружие
 //router.post('/', checkRole('admin'), weaponValidationRules, createWeapon);
-router.post('/', checkToken, checkRole('admin'), createWeapon);
+router.post('/', checkToken, checkAdmin, createWeapon);
 
 // PUT /api/weapons/:id — обновить оружие
-router.put('/:id', checkToken, checkRole('admin'), updateWeapon);
+router.put('/:id', checkToken, checkAdmin, updateWeapon);
 
 // DELETE /api/weapons/:id — удалить оружие
-router.delete('/:id', checkToken, checkRole('admin'), deleteWeapon);
+router.delete('/:id', checkToken, checkAdmin, deleteWeapon);
 
 // загрузка изображений (тест)
-router.post('/upload', checkToken, checkRole('admin'), upload.single('image'), (req, res) => {
+router.post('/upload', checkToken, checkAdmin, upload.single('image'), (req, res) => {
   res.json({ path: req.file.path });
 });
 

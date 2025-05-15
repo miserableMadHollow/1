@@ -9,5 +9,4 @@ export default {
     host: process.env.DB_HOST,
     dialect: 'postgres',
   },
-  // другие среды...
 };
